@@ -40,6 +40,7 @@ struct EmojiArtDocumentView: View {
                             OptionalImage(uiImage: document.backgroundImage)
                         )
                         .foregroundColor(.yellow)
+                        .contentShape(Rectangle())
                         .clipped()
                     ForEach(document.emojis){
                         emoji in

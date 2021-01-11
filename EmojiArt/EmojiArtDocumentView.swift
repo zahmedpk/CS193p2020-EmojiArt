@@ -77,8 +77,16 @@ struct EmojiArtDocumentView: View {
                     ForEach(document.emojis){
                         emoji in
                         Text(emoji.text)
+                            .overlay(
+                                Group {
+                                    if document.isSelected(emoji) {
+                                        selectionRectangle()
+                                    }
+                                }
+                            )
                             .position(position(of: emoji, withGeometry: geometry))
                             .font(animatableWithSize: fontSizeForEmoji)
+                            .gesture(tapGestureFor(emoji))
                     }
                 }
                 .onDrop(of: ["public.image", "public.text"], isTargeted: nil) {
@@ -133,5 +141,27 @@ struct EmojiArtDocumentView: View {
             document.setPan(newPan: .zero)
             document.setZoomScale(newZoomScale:  min(hZoom, vZoom))
         }
+    }
+    
+    func selectionRectangle() -> some View {
+        return RoundedRectangle(cornerRadius: 5)
+            .stroke(Color.blue, lineWidth: 3)
+            .overlay(   Image(systemName: "trash")
+                            .resizable()
+                            .foregroundColor(Color.blue)
+                            .frame(width: 20, height: 20, alignment: .top)
+                            .offset(x: 15, y: -15)
+                        , alignment: .topTrailing)
+    }
+    
+    func tapGestureFor(_ emoji: EmojiArt.Emoji) -> some Gesture {
+        TapGesture()
+            .onEnded {
+                if document.isSelected(emoji) {
+                    document.deSelect(emoji)
+                } else {
+                    document.select(emoji)
+                }
+            }
     }
 }

@@ -16,6 +16,7 @@ class EmojiArtDocument: ObservableObject {
     }
     @Published private(set) var backgroundImage: UIImage?
     private static let untitled = "EmojiArt.untitled"
+    private var selectedEmojis: [EmojiArt.Emoji] = []
     
     init() {
         emojiArt = EmojiArt(jsonData: UserDefaults.standard.data(forKey: EmojiArtDocument.untitled)) ?? EmojiArt()
@@ -28,10 +29,14 @@ class EmojiArtDocument: ObservableObject {
         emojiArt.emojis
     }
     var zoomScale: CGFloat {
-        return emojiArt.zoomScale
+        emojiArt.zoomScale
     }
     var panOffset: CGSize {
-        return emojiArt.panOffset
+        emojiArt.panOffset
+    }
+    
+    func isSelected(_ emoji: EmojiArt.Emoji) -> Bool {
+        return selectedEmojis.contains(matching: emoji)
     }
     
     // MARK:- intents
@@ -72,5 +77,17 @@ class EmojiArtDocument: ObservableObject {
     }
     func setPan(newPan: CGSize) {
         emojiArt.panOffset = newPan
+    }
+    func select(_ emoji: EmojiArt.Emoji) {
+        objectWillChange.send()
+        if !selectedEmojis.contains(matching: emoji){
+            selectedEmojis.append(emoji)
+        }
+    }
+    func deSelect(_ emoji: EmojiArt.Emoji) {
+        objectWillChange.send()
+        if let index = selectedEmojis.firstIndex(matching: emoji){
+            selectedEmojis.remove(at: index)
+        }
     }
 }

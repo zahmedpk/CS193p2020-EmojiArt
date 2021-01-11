@@ -5,11 +5,13 @@
 //  Created by Zubair Ahmed on 02/01/2021.
 //
 
-import Foundation
+import SwiftUI
 
 struct EmojiArt: Codable {
     var backgroundURL: URL?
     var emojis = [Emoji]()
+    var zoomScale: CGFloat = 1.0
+    var panOffset: CGSize = .zero
     
     struct Emoji: Identifiable, Codable {
         let text : String

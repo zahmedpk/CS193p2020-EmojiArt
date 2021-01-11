@@ -27,7 +27,12 @@ class EmojiArtDocument: ObservableObject {
     var emojis: [EmojiArt.Emoji] {
         emojiArt.emojis
     }
-    
+    var zoomScale: CGFloat {
+        return emojiArt.zoomScale
+    }
+    var panOffset: CGSize {
+        return emojiArt.panOffset
+    }
     
     // MARK:- intents
     func addEmoji(emoji: String, at location: CGPoint, size: CGFloat) {
@@ -61,5 +66,11 @@ class EmojiArtDocument: ObservableObject {
                 }
             }
         }
+    }
+    func setZoomScale(newZoomScale: CGFloat) {
+        emojiArt.zoomScale = newZoomScale
+    }
+    func setPan(newPan: CGSize) {
+        emojiArt.panOffset = newPan
     }
 }

@@ -90,4 +90,7 @@ class EmojiArtDocument: ObservableObject {
             selectedEmojis.remove(at: index)
         }
     }
+    func remove(_ emoji: EmojiArt.Emoji) {
+        emojiArt.removeEmoji(emoji)
+    }
 }

@@ -37,6 +37,11 @@ struct EmojiArt: Codable {
         let emoji = Emoji(text: text, x: x, y: y, size: size, id: uniqueEmojiId)
         emojis.append(emoji)
     }
+    mutating func removeEmoji(_ emoji: Emoji) {
+        if let index = emojis.firstIndex(matching: emoji){
+            emojis.remove(at: index)
+        }
+    }
     
     var json: Data? {
         return try? JSONEncoder().encode(self)

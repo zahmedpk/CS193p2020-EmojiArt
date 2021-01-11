@@ -80,7 +80,7 @@ struct EmojiArtDocumentView: View {
                             .overlay(
                                 Group {
                                     if document.isSelected(emoji) {
-                                        selectionRectangle()
+                                        selectionRectangle(for: emoji)
                                     }
                                 }
                             )
@@ -94,11 +94,9 @@ struct EmojiArtDocumentView: View {
                     let localLocation = geometry.convert(location, from: CoordinateSpace.global)
                     let localWithCenterOrigin = CGPoint(x: localLocation.x - geometry.size.width/2, y: localLocation.y - geometry.size.height/2)
                     
-                    let localWithCenterOriginZoomAdjusted = CGPoint(x: localWithCenterOrigin.x/zoomScale, y: localWithCenterOrigin.y/zoomScale)
+                    let localWithCenterOriginZoomAdjusted = CGPoint(x: (localWithCenterOrigin.x - panOffset.width) / zoomScale, y: (localWithCenterOrigin.y - panOffset.height) / zoomScale)
                     
-                    let localWithCenterOriginZoomAndPanAdjusted = CGPoint(x: localWithCenterOriginZoomAdjusted.x - panOffset.width, y: localWithCenterOriginZoomAdjusted.y - panOffset.height)
-                    
-                    return self.drop(providers: providers, location: localWithCenterOriginZoomAndPanAdjusted)
+                    return self.drop(providers: providers, location: localWithCenterOriginZoomAdjusted)
                 }
                 .gesture(panGesture)
                 .onTapGesture(count: 2) {
@@ -127,8 +125,8 @@ struct EmojiArtDocumentView: View {
         return found
     }
     func position(of emoji: EmojiArt.Emoji, withGeometry geometry: GeometryProxy) -> CGPoint {
-        let x = (CGFloat(emoji.x) + panOffset.width) * zoomScale
-        let y = (CGFloat(emoji.y) + panOffset.height) * zoomScale
+        let x = (CGFloat(emoji.x) ) * zoomScale + panOffset.width
+        let y = (CGFloat(emoji.y) ) * zoomScale + panOffset.height
         let x2 = x + geometry.size.width/2
         let y2 = y + geometry.size.height/2
         let pos =  CGPoint(x: x2, y: y2)
@@ -143,17 +141,20 @@ struct EmojiArtDocumentView: View {
         }
     }
     
-    func selectionRectangle() -> some View {
+    func selectionRectangle(for emoji: EmojiArt.Emoji) -> some View {
         return RoundedRectangle(cornerRadius: 5)
             .stroke(Color.blue, lineWidth: 3)
+            .frame(minWidth: 30, minHeight: 30)
             .overlay(   Image(systemName: "trash")
                             .resizable()
                             .foregroundColor(Color.blue)
                             .frame(width: 20, height: 20, alignment: .top)
                             .offset(x: 15, y: -15)
+                            .onTapGesture {
+                                document.remove(emoji)
+                            }
                         , alignment: .topTrailing)
     }
-    
     func tapGestureFor(_ emoji: EmojiArt.Emoji) -> some Gesture {
         TapGesture()
             .onEnded {

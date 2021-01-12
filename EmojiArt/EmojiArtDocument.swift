@@ -16,7 +16,7 @@ class EmojiArtDocument: ObservableObject {
     }
     @Published private(set) var backgroundImage: UIImage?
     private static let untitled = "EmojiArt.untitled"
-    private var selectedEmojis: [EmojiArt.Emoji] = []
+    private(set) var selectedEmojis: [EmojiArt.Emoji] = []
     
     init() {
         emojiArt = EmojiArt(jsonData: UserDefaults.standard.data(forKey: EmojiArtDocument.untitled)) ?? EmojiArt()
@@ -101,6 +101,11 @@ class EmojiArtDocument: ObservableObject {
     func  moveAllSelectedEmojis(by offset: CGSize) {
         for emoji in selectedEmojis {
             moveEmoji(emoji: emoji, by: offset)
+        }
+    }
+    func scaleAllSelectedEmojis(by factor: CGFloat) {
+        for emoji in selectedEmojis {
+            scaleEmoji(emoji: emoji, by: factor)
         }
     }
 }

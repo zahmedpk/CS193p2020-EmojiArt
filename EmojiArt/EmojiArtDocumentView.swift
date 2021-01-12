@@ -12,7 +12,7 @@ struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
     private let defaultEmojiSize: CGFloat = 40
     @GestureState private var transientZoomScale: CGFloat = 1.0
-    
+    @GestureState private var transientZoomScaleForSelection: CGFloat = 1.0
     @GestureState private var transientPanOffset: CGSize = .zero
     
     var zoomScale: CGFloat {
@@ -21,10 +21,6 @@ struct EmojiArtDocumentView: View {
     
     var panOffset: CGSize {
         (document.panOffset + transientPanOffset) * zoomScale
-    }
-    
-    var fontSizeForEmoji: CGFloat {
-        defaultEmojiSize * zoomScale
     }
     
     var magnificationGesture: some Gesture {
@@ -36,6 +32,16 @@ struct EmojiArtDocumentView: View {
                 document.setZoomScale(newZoomScale: finalZoomScale*document.zoomScale)
             }
     }
+    var magnificationGestureForSelection: some Gesture {
+        MagnificationGesture()
+            .updating($transientZoomScaleForSelection) { (latestValue, state, transaction) in
+                state = latestValue
+            }
+            .onEnded { finalValue in
+                document.scaleAllSelectedEmojis(by: finalValue)
+            }
+    }
+    
     var panGesture: some Gesture {
         DragGesture()
             .updating($transientPanOffset) { latestValue, state, transaction in
@@ -97,7 +103,7 @@ struct EmojiArtDocumentView: View {
                                 }
                             )
                             .position(position(of: emoji, withGeometry: geometry))
-                            .font(animatableWithSize: fontSizeForEmoji)
+                            .font(animatableWithSize: fontSizeForEmoji(emoji))
                             .gesture(tapGestureFor(emoji))
                             .offset(document.isSelected(emoji) ? panOffsetForSelection: .zero)
                             .gesture(document.isSelected(emoji) ? dragGestureForSelection(of: emoji): nil)
@@ -122,7 +128,8 @@ struct EmojiArtDocumentView: View {
                 .onTapGesture {
                     document.deSelectAllEmojis()
                 }
-                .gesture(magnificationGesture)
+                .gesture(document.selectedEmojis.count > 0 ? magnificationGestureForSelection : nil)
+                .gesture(document.selectedEmojis.count == 0 ? magnificationGesture : nil)
                 
             }
             .clipped()
@@ -182,5 +189,8 @@ struct EmojiArtDocumentView: View {
                     document.select(emoji)
                 }
             }
+    }
+    func fontSizeForEmoji(_ emoji: EmojiArt.Emoji) -> CGFloat {
+        CGFloat(emoji.size) * zoomScale * (document.isSelected(emoji) ? transientZoomScaleForSelection : 1.0)
     }
 }

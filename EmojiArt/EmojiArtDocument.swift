@@ -93,4 +93,14 @@ class EmojiArtDocument: ObservableObject {
     func remove(_ emoji: EmojiArt.Emoji) {
         emojiArt.removeEmoji(emoji)
     }
+    func deSelectAllEmojis() {
+        for emoji in emojiArt.emojis {
+            deSelect(emoji)
+        }
+    }
+    func  moveAllSelectedEmojis(by offset: CGSize) {
+        for emoji in selectedEmojis {
+            moveEmoji(emoji: emoji, by: offset)
+        }
+    }
 }

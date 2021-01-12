@@ -46,6 +46,16 @@ struct EmojiArtDocumentView: View {
             }
     }
     
+    @GestureState private var panOffsetForSelection: CGSize = .zero
+    func dragGestureForSelection(of emoji: EmojiArt.Emoji) -> some Gesture {
+        return DragGesture(minimumDistance: 1.0, coordinateSpace: .local)
+            .updating($panOffsetForSelection, body: { (latestValue, state, transaction) in
+                state = latestValue.translation
+            })
+            .onEnded { (finalValue) in
+                document.moveAllSelectedEmojis(by: finalValue.translation/zoomScale)
+            }
+    }
     var body: some View {
         VStack {
             ScrollView(.horizontal) {
@@ -81,12 +91,17 @@ struct EmojiArtDocumentView: View {
                                 Group {
                                     if document.isSelected(emoji) {
                                         selectionRectangle(for: emoji)
+                                            .contentShape(Rectangle())
+          
                                     }
                                 }
                             )
                             .position(position(of: emoji, withGeometry: geometry))
                             .font(animatableWithSize: fontSizeForEmoji)
                             .gesture(tapGestureFor(emoji))
+                            .offset(document.isSelected(emoji) ? panOffsetForSelection: .zero)
+                            .gesture(document.isSelected(emoji) ? dragGestureForSelection(of: emoji): nil)
+                            
                     }
                 }
                 .onDrop(of: ["public.image", "public.text"], isTargeted: nil) {
@@ -103,6 +118,9 @@ struct EmojiArtDocumentView: View {
                     withAnimation {
                         setZoomToFitBackgroundImage(in: geometry)
                     }
+                }
+                .onTapGesture {
+                    document.deSelectAllEmojis()
                 }
                 .gesture(magnificationGesture)
                 

@@ -13,7 +13,7 @@ struct EmojiArt: Codable {
     var zoomScale: CGFloat = 1.0
     var panOffset: CGSize = .zero
     
-    struct Emoji: Identifiable, Codable {
+    struct Emoji: Identifiable, Codable, Hashable {
         let text : String
         //coorindate system is 0,0 in center
         var x: Int

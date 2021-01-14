@@ -12,8 +12,10 @@ struct MainView: View {
     @ObservedObject var document: EmojiArtDocument
     private let defaultEmojiSize: CGFloat = 40
     @GestureState private var transientZoomScale: CGFloat = 1.0
-    @GestureState private var transientZoomScaleForSelection: CGFloat = 1.0
     @GestureState private var transientPanOffset: CGSize = .zero
+    
+    @GestureState private var transientZoomScaleForSelection: CGFloat = 1.0
+    @GestureState private var panOffsetForSelection: CGSize = .zero
     
     var zoomScale: CGFloat {
         document.zoomScale * transientZoomScale
@@ -41,6 +43,15 @@ struct MainView: View {
                 document.scaleAllSelectedEmojis(by: finalValue)
             }
     }
+    func dragGestureForSelection(of emoji: EmojiArt.Emoji) -> some Gesture {
+        return DragGesture(minimumDistance: 1.0, coordinateSpace: .local)
+            .updating($panOffsetForSelection, body: { (latestValue, state, transaction) in
+                state = latestValue.translation
+            })
+            .onEnded { (finalValue) in
+                document.moveAllSelectedEmojis(by: finalValue.translation/zoomScale)
+            }
+    }
     
     var panGesture: some Gesture {
         DragGesture()
@@ -52,16 +63,6 @@ struct MainView: View {
             }
     }
     
-    @GestureState private var panOffsetForSelection: CGSize = .zero
-    func dragGestureForSelection(of emoji: EmojiArt.Emoji) -> some Gesture {
-        return DragGesture(minimumDistance: 1.0, coordinateSpace: .local)
-            .updating($panOffsetForSelection, body: { (latestValue, state, transaction) in
-                state = latestValue.translation
-            })
-            .onEnded { (finalValue) in
-                document.moveAllSelectedEmojis(by: finalValue.translation/zoomScale)
-            }
-    }
     var body: some View {
         VStack {
             MenuBarView(emojiPallette: EmojiArtDocument.pallette, defaultEmojiSize: defaultEmojiSize)
@@ -71,22 +72,8 @@ struct MainView: View {
                     BackgroundImageView(image: document.backgroundImage, zoomScale: zoomScale, panOffset: panOffset)
                     ForEach(document.emojis){
                         emoji in
-                        Text(emoji.text)
-                            .overlay(
-                                Group {
-                                    if document.isSelected(emoji) {
-                                        selectionRectangle(for: emoji)
-                                            .contentShape(Rectangle())
-          
-                                    }
-                                }
-                            )
-                            .position(position(of: emoji, withGeometry: geometry))
-                            .font(animatableWithSize: fontSizeForEmoji(emoji))
-                            .gesture(tapGestureFor(emoji))
-                            .offset(document.isSelected(emoji) ? panOffsetForSelection: .zero)
+                        EmojiView(geometry: geometry, document: document, emoji: emoji, zoomScale: zoomScale, panOffset: panOffset, transientZoomScaleForSelection: transientZoomScaleForSelection, panOffsetForSelection: panOffsetForSelection)
                             .gesture(document.isSelected(emoji) ? dragGestureForSelection(of: emoji): nil)
-                            
                     }
                 }
                 .onDrop(of: ["public.image", "public.text"], isTargeted: nil) {
@@ -128,14 +115,7 @@ struct MainView: View {
         }
         return found
     }
-    func position(of emoji: EmojiArt.Emoji, withGeometry geometry: GeometryProxy) -> CGPoint {
-        let x = (CGFloat(emoji.x) ) * zoomScale + panOffset.width
-        let y = (CGFloat(emoji.y) ) * zoomScale + panOffset.height
-        let x2 = x + geometry.size.width/2
-        let y2 = y + geometry.size.height/2
-        let pos =  CGPoint(x: x2, y: y2)
-        return pos
-    }
+    
     func setZoomToFitBackgroundImage(in geometry: GeometryProxy){
         if let image = document.backgroundImage, image.size.height > 0 ,image.size.width > 0  {
             let hZoom = geometry.size.width / image.size.width
@@ -145,30 +125,6 @@ struct MainView: View {
         }
     }
     
-    func selectionRectangle(for emoji: EmojiArt.Emoji) -> some View {
-        return RoundedRectangle(cornerRadius: 5)
-            .stroke(Color.blue, lineWidth: 3)
-            .frame(minWidth: 30, minHeight: 30)
-            .overlay(   Image(systemName: "trash")
-                            .resizable()
-                            .foregroundColor(Color.blue)
-                            .frame(width: 20, height: 20, alignment: .top)
-                            .offset(x: 15, y: -15)
-                            .onTapGesture {
-                                document.remove(emoji)
-                            }
-                        , alignment: .topTrailing)
-    }
-    func tapGestureFor(_ emoji: EmojiArt.Emoji) -> some Gesture {
-        TapGesture()
-            .onEnded {
-                if document.isSelected(emoji) {
-                    document.deSelect(emoji)
-                } else {
-                    document.select(emoji)
-                }
-            }
-    }
     func fontSizeForEmoji(_ emoji: EmojiArt.Emoji) -> CGFloat {
         CGFloat(emoji.size) * zoomScale * (document.isSelected(emoji) ? transientZoomScaleForSelection : 1.0)
     }

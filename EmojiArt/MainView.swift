@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EmojiArtDocumentView: View {
+struct MainView: View {
     
     @ObservedObject var document: EmojiArtDocument
     private let defaultEmojiSize: CGFloat = 40

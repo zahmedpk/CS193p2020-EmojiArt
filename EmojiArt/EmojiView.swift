@@ -13,8 +13,8 @@ struct EmojiView: View {
     let emoji: EmojiArt.Emoji
     let zoomScale: CGFloat
     let panOffset: CGSize
-    var transientZoomScaleForSelection: CGFloat
     @Binding var panOffsetForSelection: CGSize
+    @Binding var transientZoomScaleForSelection: CGFloat
     var body: some View {
         Text(emoji.text)
             .overlay(

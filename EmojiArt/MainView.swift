@@ -14,7 +14,7 @@ struct MainView: View {
     @GestureState private var transientZoomScale: CGFloat = 1.0
     @GestureState private var transientPanOffset: CGSize = .zero
     
-    @GestureState private var transientZoomScaleForSelection: CGFloat = 1.0
+    @State private var transientZoomScaleForSelection: CGFloat = 1.0
     @State private var panOffsetForSelection: CGSize = .zero
     
     var zoomScale: CGFloat {
@@ -36,11 +36,12 @@ struct MainView: View {
     }
     var magnificationGestureForSelection: some Gesture {
         MagnificationGesture()
-            .updating($transientZoomScaleForSelection) { (latestValue, state, transaction) in
-                state = latestValue
-            }
+            .onChanged({ latestValue in
+                transientZoomScaleForSelection = latestValue
+            })
             .onEnded { finalValue in
                 document.scaleAllSelectedEmojis(by: finalValue)
+                transientZoomScaleForSelection = 1.0
             }
     }
     var panGesture: some Gesture {
@@ -62,7 +63,7 @@ struct MainView: View {
                     BackgroundImageView(image: document.backgroundImage, zoomScale: zoomScale, panOffset: panOffset)
                     ForEach(document.emojis){
                         emoji in
-                        EmojiView(geometry: geometry, emoji: emoji, zoomScale: zoomScale, panOffset: panOffset, transientZoomScaleForSelection: transientZoomScaleForSelection, panOffsetForSelection: $panOffsetForSelection).environmentObject(document)
+                        EmojiView(geometry: geometry, emoji: emoji, zoomScale: zoomScale, panOffset: panOffset,panOffsetForSelection: $panOffsetForSelection, transientZoomScaleForSelection: $transientZoomScaleForSelection).environmentObject(document)
                     }
                 }
                 .onDrop(of: ["public.image", "public.text"], isTargeted: nil) {

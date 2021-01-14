@@ -9,12 +9,12 @@ import SwiftUI
 
 struct EmojiView: View {
     let geometry: GeometryProxy
-    let document: EmojiArtDocument
+    @EnvironmentObject var document: EmojiArtDocument
     let emoji: EmojiArt.Emoji
     let zoomScale: CGFloat
     let panOffset: CGSize
     var transientZoomScaleForSelection: CGFloat
-    var panOffsetForSelection: CGSize
+    @Binding var panOffsetForSelection: CGSize
     var body: some View {
         Text(emoji.text)
             .overlay(
@@ -30,6 +30,7 @@ struct EmojiView: View {
             .font(animatableWithSize: fontSizeForEmoji(emoji))
             .gesture(tapGestureFor(emoji))
             .offset(document.isSelected(emoji) ? panOffsetForSelection: .zero)
+            .gesture(document.isSelected(emoji) ? dragGestureForSelection(): nil)
     }
     func position(of emoji: EmojiArt.Emoji, withGeometry geometry: GeometryProxy) -> CGPoint {
         let x = (CGFloat(emoji.x) ) * zoomScale + panOffset.width
@@ -64,5 +65,15 @@ struct EmojiView: View {
                 document.select(emoji)
             }
         }
+    }
+    func dragGestureForSelection() -> some Gesture {
+        return DragGesture(minimumDistance: 1.0, coordinateSpace: .local)
+            .onChanged({ (latestValue) in
+                panOffsetForSelection = latestValue.translation
+            })
+            .onEnded { (finalValue) in
+                document.moveAllSelectedEmojis(by: finalValue.translation/zoomScale)
+                panOffsetForSelection = .zero
+            }
     }
 }

@@ -15,7 +15,7 @@ struct MainView: View {
     @GestureState private var transientPanOffset: CGSize = .zero
     
     @GestureState private var transientZoomScaleForSelection: CGFloat = 1.0
-    @GestureState private var panOffsetForSelection: CGSize = .zero
+    @State private var panOffsetForSelection: CGSize = .zero
     
     var zoomScale: CGFloat {
         document.zoomScale * transientZoomScale
@@ -43,16 +43,6 @@ struct MainView: View {
                 document.scaleAllSelectedEmojis(by: finalValue)
             }
     }
-    func dragGestureForSelection(of emoji: EmojiArt.Emoji) -> some Gesture {
-        return DragGesture(minimumDistance: 1.0, coordinateSpace: .local)
-            .updating($panOffsetForSelection, body: { (latestValue, state, transaction) in
-                state = latestValue.translation
-            })
-            .onEnded { (finalValue) in
-                document.moveAllSelectedEmojis(by: finalValue.translation/zoomScale)
-            }
-    }
-    
     var panGesture: some Gesture {
         DragGesture()
             .updating($transientPanOffset) { latestValue, state, transaction in
@@ -72,8 +62,7 @@ struct MainView: View {
                     BackgroundImageView(image: document.backgroundImage, zoomScale: zoomScale, panOffset: panOffset)
                     ForEach(document.emojis){
                         emoji in
-                        EmojiView(geometry: geometry, document: document, emoji: emoji, zoomScale: zoomScale, panOffset: panOffset, transientZoomScaleForSelection: transientZoomScaleForSelection, panOffsetForSelection: panOffsetForSelection)
-                            .gesture(document.isSelected(emoji) ? dragGestureForSelection(of: emoji): nil)
+                        EmojiView(geometry: geometry, emoji: emoji, zoomScale: zoomScale, panOffset: panOffset, transientZoomScaleForSelection: transientZoomScaleForSelection, panOffsetForSelection: $panOffsetForSelection).environmentObject(document)
                     }
                 }
                 .onDrop(of: ["public.image", "public.text"], isTargeted: nil) {

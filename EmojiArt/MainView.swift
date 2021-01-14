@@ -64,32 +64,11 @@ struct MainView: View {
     }
     var body: some View {
         VStack {
-            ScrollView(.horizontal) {
-                HStack {
-                    ForEach(EmojiArtDocument.pallette.map {String($0)}, id: \.self) {
-                        emoji in
-                        Text(emoji)
-                            .font(Font.system(size: defaultEmojiSize))
-                            .onDrag {
-                                return NSItemProvider(object: emoji as NSString)
-                            }
-                    }
-                }.padding(.horizontal)
-            }
-            
+            MenuBarView(emojiPallette: EmojiArtDocument.pallette, defaultEmojiSize: defaultEmojiSize)
             GeometryReader {
                 geometry in
                 ZStack {
-                    Rectangle()
-                        .edgesIgnoringSafeArea([.horizontal, .bottom])
-                        .overlay(
-                            OptionalImage(uiImage: document.backgroundImage)
-                                .scaleEffect(zoomScale)
-                        )
-                        .offset(panOffset)
-                        .foregroundColor(.white	)
-                        .contentShape(Rectangle())
-                        .clipped()
+                    BackgroundImageView(image: document.backgroundImage, zoomScale: zoomScale, panOffset: panOffset)
                     ForEach(document.emojis){
                         emoji in
                         Text(emoji.text)

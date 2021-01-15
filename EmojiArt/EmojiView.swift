@@ -21,8 +21,6 @@ struct EmojiView: View {
                 Group {
                     if document.isSelected(emoji) {
                         selectionRectangle(for: emoji)
-                            .contentShape(Rectangle())
-
                     }
                 }
             )
@@ -43,17 +41,22 @@ struct EmojiView: View {
     func selectionRectangle(for emoji: EmojiArt.Emoji) -> some View {
         return RoundedRectangle(cornerRadius: 5)
             .stroke(Color.blue, lineWidth: 3)
-            .frame(minWidth: 30, minHeight: 30)
-            .overlay(   Image(systemName: "trash")
-                            .resizable()
-                            .foregroundColor(Color.blue)
-                            .frame(width: 20, height: 20, alignment: .top)
-                            .offset(x: 15, y: -15)
-                            .onTapGesture {
-                                document.remove(emoji)
-                            }
-                        , alignment: .topTrailing)
+            .frame(minWidth: 40, minHeight: 40)
+            .overlay( deleteButtonOverlay , alignment: .topTrailing)
     }
+    
+    var deleteButtonOverlay: some View {
+        Image(systemName: "trash")
+                        .resizable()
+                        .contentShape(Rectangle())
+                        .foregroundColor(Color.blue)
+                        .frame(width: 30, height: 30, alignment: .top)
+                        .offset(x: 20, y: -20)
+                        .onTapGesture {
+                            document.remove(emoji)
+                        }
+    }
+    
     func fontSizeForEmoji(_ emoji: EmojiArt.Emoji) -> CGFloat {
         CGFloat(emoji.size) * zoomScale * (document.isSelected(emoji) ? transientZoomScaleForSelection : 1.0)
     }

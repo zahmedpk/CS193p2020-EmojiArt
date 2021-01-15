@@ -39,6 +39,17 @@ class EmojiArtDocument: ObservableObject {
         return selectedEmojis.contains(matching: emoji)
     }
     
+    var backgroundURL: URL? {
+        set {
+            emojiArt.backgroundURL = newValue?.imageURL
+            fetchBackgroundImageData()
+        }
+        
+        get {
+            emojiArt.backgroundURL
+        }
+    }
+    
     // MARK:- intents
     func addEmoji(emoji: String, at location: CGPoint, size: CGFloat) {
         emojiArt.addEmoji(text: emoji, x: Int(location.x), y: Int(location.y), size: Int(size))
@@ -53,10 +64,6 @@ class EmojiArtDocument: ObservableObject {
         if let index = emojiArt.emojis.firstIndex(where: {$0.id == emoji.id}){
             emojiArt.emojis[index].size = Int((CGFloat(emojiArt.emojis[index].size) * scale).rounded(.toNearestOrEven))
         }
-    }
-    func setBackground(url: URL?){
-        emojiArt.backgroundURL = url?.imageURL
-        fetchBackgroundImageData()
     }
     func fetchBackgroundImageData(){
         backgroundImage = nil
@@ -83,27 +90,34 @@ class EmojiArtDocument: ObservableObject {
         if !selectedEmojis.contains(matching: emoji){
             selectedEmojis.append(emoji)
         }
+        print("selected emojis are \(selectedEmojis)")
     }
     func deSelect(_ emoji: EmojiArt.Emoji) {
         objectWillChange.send()
         if let index = selectedEmojis.firstIndex(matching: emoji){
             selectedEmojis.remove(at: index)
         }
+        print("selected emojis are \(selectedEmojis)")
     }
     func remove(_ emoji: EmojiArt.Emoji) {
+        objectWillChange.send()
+        deSelect(emoji)
         emojiArt.removeEmoji(emoji)
     }
     func deSelectAllEmojis() {
+        objectWillChange.send()
         for emoji in emojiArt.emojis {
             deSelect(emoji)
         }
     }
     func  moveAllSelectedEmojis(by offset: CGSize) {
+        objectWillChange.send()
         for emoji in selectedEmojis {
             moveEmoji(emoji: emoji, by: offset)
         }
     }
     func scaleAllSelectedEmojis(by factor: CGFloat) {
+        objectWillChange.send()
         for emoji in selectedEmojis {
             scaleEmoji(emoji: emoji, by: factor)
         }

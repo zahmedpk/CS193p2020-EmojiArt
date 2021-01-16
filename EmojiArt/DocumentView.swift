@@ -70,6 +70,9 @@ struct DocumentView: View {
         }
         .gesture(document.selectedEmojis.count > 0 ? magnificationGestureForSelection : nil)
         .gesture(document.selectedEmojis.count == 0 ? magnificationGesture : nil)
+        .onReceive(document.$backgroundImage, perform: { _ in
+            setZoomToFitBackgroundImage(in: geometry)
+        })
     }
     var panGesture: some Gesture {
         DragGesture()

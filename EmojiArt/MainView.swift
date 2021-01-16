@@ -12,7 +12,7 @@ struct MainView: View {
     private let defaultEmojiSize: CGFloat = 40
     var body: some View {
         VStack {
-            MenuBarView(emojiPallette: EmojiArtDocument.pallette, defaultEmojiSize: defaultEmojiSize)
+            MenuBarView(defaultEmojiSize: defaultEmojiSize, document: document).environmentObject(document)
             if backgroundImageIsLoading {
                 Group {
                     Image(systemName: "hourglass")

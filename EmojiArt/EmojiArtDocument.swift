@@ -6,20 +6,21 @@
 //
 
 import SwiftUI
+import Combine
 
 class EmojiArtDocument: ObservableObject {
     static let pallette: String = "⚽️🏀🏈🏏🏓"
-    @Published private var emojiArt: EmojiArt {
-        didSet {
-            UserDefaults.standard.setValue(emojiArt.json, forKey: EmojiArtDocument.untitled)
-        }
-    }
+    @Published private var emojiArt: EmojiArt
     @Published private(set) var backgroundImage: UIImage?
     private static let untitled = "EmojiArt.untitled"
     private(set) var selectedEmojis: [EmojiArt.Emoji] = []
+    private var cancellable: AnyCancellable?
     
     init() {
         emojiArt = EmojiArt(jsonData: UserDefaults.standard.data(forKey: EmojiArtDocument.untitled)) ?? EmojiArt()
+        cancellable = $emojiArt.sink { (emojiArtNew) in
+            UserDefaults.standard.setValue(emojiArtNew.json, forKey: EmojiArtDocument.untitled)
+        }
         fetchBackgroundImageData()
     }
     
@@ -68,15 +69,22 @@ class EmojiArtDocument: ObservableObject {
     func fetchBackgroundImageData(){
         backgroundImage = nil
         if let url = emojiArt.backgroundURL {
-            DispatchQueue.global(qos: .userInitiated).async {
-                if let imageData = try? Data(contentsOf: url) {
-                    DispatchQueue.main.async {
-                        if url == self.emojiArt.backgroundURL {
-                            self.backgroundImage = UIImage(data: imageData)
+            let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                if error == nil {
+                    if let imageData = try? Data(contentsOf: url){
+                        DispatchQueue.main.async {
+                            if url == self.emojiArt.backgroundURL {
+                                self.backgroundImage = UIImage(data: imageData)
+                            }
                         }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.backgroundURL = nil
                     }
                 }
             }
+            task.resume()
         }
     }
     func setZoomScale(newZoomScale: CGFloat) {

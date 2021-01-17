@@ -98,14 +98,12 @@ class EmojiArtDocument: ObservableObject {
         if !selectedEmojis.contains(matching: emoji){
             selectedEmojis.append(emoji)
         }
-        print("selected emojis are \(selectedEmojis)")
     }
     func deSelect(_ emoji: EmojiArt.Emoji) {
         objectWillChange.send()
         if let index = selectedEmojis.firstIndex(matching: emoji){
             selectedEmojis.remove(at: index)
         }
-        print("selected emojis are \(selectedEmojis)")
     }
     func remove(_ emoji: EmojiArt.Emoji) {
         objectWillChange.send()

@@ -28,10 +28,10 @@ struct MenuBarView: View {
                 .onTapGesture {
                     showPaletteEditor = true
                 }
-                .popover(isPresented: $showPaletteEditor) {
-                    PaletteEditor(chosenPalette: $chosenPallette)
+                .sheet(isPresented: $showPaletteEditor) {
+                    PaletteEditor(chosenPalette: $chosenPallette, showPaletteEditor: $showPaletteEditor)
                         .environmentObject(document)
-                        .frame(width: 300, height: 500, alignment: .center)
+                        .frame(minWidth: 300, minHeight: 500, alignment: .center)
                 }
             ScrollView(.horizontal) {
                 HStack {
@@ -54,9 +54,16 @@ struct PaletteEditor: View {
     @Binding var chosenPalette: String
     @State var paletteName: String = ""
     @State var emojisToAdd: String = ""
+    @Binding var showPaletteEditor: Bool
     var body: some View {
         VStack(spacing: 0) {
-            Text("Palette Editor").font(.headline).padding()
+            ZStack {
+                Text("Palette Editor").font(.headline).padding()
+                HStack {
+                    Spacer()
+                    Button("Done", action: {showPaletteEditor = false}).padding(.horizontal)
+                }
+            }
             Divider()
             Form {
                 Section {

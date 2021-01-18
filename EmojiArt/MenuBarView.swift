@@ -28,7 +28,7 @@ struct MenuBarView: View {
                 .onTapGesture {
                     showPaletteEditor = true
                 }
-                .sheet(isPresented: $showPaletteEditor) {
+                .sheetOrPopover(isPresented: $showPaletteEditor) {
                     PaletteEditor(chosenPalette: $chosenPallette, showPaletteEditor: $showPaletteEditor)
                         .environmentObject(document)
                         .frame(minWidth: 300, minHeight: 500, alignment: .center)

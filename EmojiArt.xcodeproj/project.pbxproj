@@ -23,6 +23,7 @@
 		3D93C3C525B07BAA006F058E /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D93C3C425B07BAA006F058E /* DocumentView.swift */; };
 		3DE5081125A962C5006F04AF /* OptionalImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5081025A962C5006F04AF /* OptionalImageView.swift */; };
 		3DE5081625AB17AE006F04AF /* AnimatableSystemFontModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5081525AB17AE006F04AF /* AnimatableSystemFontModifier.swift */; };
+		857879BE25B56325001CE506 /* SheetOrPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857879BD25B56325001CE506 /* SheetOrPopover.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		3D93C3C425B07BAA006F058E /* DocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
 		3DE5081025A962C5006F04AF /* OptionalImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalImageView.swift; sourceTree = "<group>"; };
 		3DE5081525AB17AE006F04AF /* AnimatableSystemFontModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimatableSystemFontModifier.swift; sourceTree = "<group>"; };
+		857879BD25B56325001CE506 /* SheetOrPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetOrPopover.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				3DE5081525AB17AE006F04AF /* AnimatableSystemFontModifier.swift */,
 				3D63A5D325B1F513006D1E0A /* Spinning.swift */,
 				3D63A5DC25B280F2006D1E0A /* EmojiArtDocument+Palette.swift */,
+				857879BD25B56325001CE506 /* SheetOrPopover.swift */,
 				3D10C59925A0127A00BCD676 /* Assets.xcassets */,
 				3D10C59E25A0127A00BCD676 /* Info.plist */,
 				3D10C59B25A0127A00BCD676 /* Preview Content */,
@@ -182,6 +185,7 @@
 				3D10C5B025A06F1F00BCD676 /* EmojiArtExtensions.swift in Sources */,
 				3D63A5D925B27F06006D1E0A /* PalletteChooser.swift in Sources */,
 				3D10C59825A0127900BCD676 /* MainView.swift in Sources */,
+				857879BE25B56325001CE506 /* SheetOrPopover.swift in Sources */,
 				3D10C5A625A0137600BCD676 /* EmojiArtDocument.swift in Sources */,
 				3D93C3C525B07BAA006F058E /* DocumentView.swift in Sources */,
 				3DE5081125A962C5006F04AF /* OptionalImageView.swift in Sources */,

@@ -23,6 +23,7 @@ class EmojiArtDocument: ObservableObject, Hashable, Identifiable {
     private var cancellable: AnyCancellable?
     
     init(id: UUID? = nil) {
+        print("constructing a new EmojiArtDocument")
         self.id = id ?? UUID()
         let defaultKey = "EmojiArtDocument.\(self.id.uuidString)"
         emojiArt = EmojiArt(jsonData: UserDefaults.standard.data(forKey: defaultKey)) ?? EmojiArt()
@@ -75,6 +76,7 @@ class EmojiArtDocument: ObservableObject, Hashable, Identifiable {
         }
     }
     func fetchBackgroundImageData(){
+        print("fetching a background url")
         backgroundImage = nil
         if let url = emojiArt.backgroundURL {
             let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -88,6 +90,7 @@ class EmojiArtDocument: ObservableObject, Hashable, Identifiable {
                     }
                 } else {
                     DispatchQueue.main.async {
+                        print("could not load the image from internet")
                         self.backgroundURL = nil
                     }
                 }

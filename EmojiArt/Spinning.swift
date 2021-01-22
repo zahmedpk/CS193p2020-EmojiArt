@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct Spinning: ViewModifier {
-    @State var angle = Angle.degrees(0)
+    @State var isRotated: Bool = false
     func body(content: Content) -> some View {
         content
-            .rotationEffect(angle)
-            .animation(Animation.linear(duration: 2).repeatForever(autoreverses: false))
+            .rotationEffect(Angle.degrees(isRotated ? 360: 0))
             .onAppear {
-                self.angle = Angle.degrees(360)
+                withAnimation(animation) {
+                    self.isRotated = true
+                }
             }
+    }
+    var animation: Animation {
+        Animation.linear(duration: 2).repeatForever(autoreverses: false)
     }
 }
 

@@ -28,7 +28,6 @@ struct DocumentView: View {
     var magnificationGesture: some Gesture {
         MagnificationGesture()
             .updating($transientZoomScale) { (latestValue, state, transaction) in
-                print("pinch zooming")
                 state = latestValue
             }
             .onEnded { (finalZoomScale) in
@@ -84,7 +83,8 @@ struct DocumentView: View {
             }
     }
     func setZoomToFitBackgroundImage(in geometry: GeometryProxy){
-        if let image = document.backgroundImage, image.size.height > 0 ,image.size.width > 0  {
+        if let image = document.backgroundImage, image.size.height > 0 ,image.size.width > 0, geometry.size
+            .height > 0, geometry.size.width > 0 {
             let hZoom = geometry.size.width / image.size.width
             let vZoom = geometry.size.height / image.size.height
             document.setPan(newPan: .zero)

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MainView: View {
+struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
     private let defaultEmojiSize: CGFloat = 40
     var body: some View {
@@ -22,13 +22,19 @@ struct MainView: View {
                 }
                 .frame(maxHeight: .infinity)
             } else {
-            GeometryReader {
-                geometry in
+                GeometryReader {
+                    geometry in
                     DocumentView(defaultEmojiSize: .constant(defaultEmojiSize), geometry: geometry).environmentObject(document)
+                }
+                .clipped()
             }
-            .clipped()
+        }.navigationBarItems(trailing: Button(action: {
+            if let url = UIPasteboard.general.url {
+                document.backgroundURL = url
             }
-        }
+        }, label: {
+            Image(systemName: "doc.on.clipboard")
+        }))
     }
     var backgroundImageIsLoading: Bool {
         document.backgroundURL != nil && document.backgroundImage == nil
